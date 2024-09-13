@@ -1,0 +1,14 @@
+.play-button {
+
+    -fx-background-color:  #ffc240;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+    -fx-font-family: 'Maiandra GD';
+    -fx-font-size: 18px;
+
+}
+
+.play-button:hover {
+    -fx-background-color:  #fdd277;
+}
+

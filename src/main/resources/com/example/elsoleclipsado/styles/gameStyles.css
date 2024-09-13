@@ -1,0 +1,51 @@
+#validateButton {
+    -fx-background-radius: 20;
+    -fx-background-color: #ff9933;
+    -fx-font-size: 17px;
+    -fx-font-family: 'Maiandra GD';
+    -fx-font-weight: bold;
+    -fx-border-color: #ffcc80;
+    -fx-border-width: 2;
+    -fx-border-radius: 20;
+    -fx-padding: 10px;
+    -fx-effect:  dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 5);
+}
+
+
+#validateButton:hover {
+    -fx-background-color: #ffcc80;
+}
+
+
+#helpButton {
+    -fx-background-radius: 50;
+    -fx-background-color: #ffffff;
+    -fx-font-family: 'Maiandra GD';
+    -fx-border-color: #ff9933;
+    -fx-border-width: 2;
+    -fx-border-radius: 50;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 10, 0, 0, 5);
+}
+
+#helpButton:hover {
+    -fx-background-color: #ffcc80;
+}
+
+.text-field {
+    -fx-pref-width: 50;
+    -fx-pref-height: 50;
+    -fx-alignment: 'Center';
+    -fx-font-family: "Maiandra GD";
+    -fx-font-size: 16px;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #ffffff;
+    -fx-border-width: 2;
+    -fx-background-color: #f0f0f0;
+}
+
+.text-field:focused {
+    -fx-border-color: #ffcc80;
+    -fx-background-color: #f0f0f0;
+
+}
