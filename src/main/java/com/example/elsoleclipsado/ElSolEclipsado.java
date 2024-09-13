@@ -24,7 +24,7 @@ public class ElSolEclipsado extends Application {
         primaryStage.setTitle("El Sol Eclipsado");
         Scene scene =  new Scene(root);
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
-
     }
 }

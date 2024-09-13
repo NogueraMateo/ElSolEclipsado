@@ -67,6 +67,7 @@ public class ForePlayController {
 
             Stage stage =  (Stage) playButton.getScene().getWindow();
             stage.setScene(new Scene(root));
+            stage.setResizable(false);
             stage.show();
 
         } catch (Exception e) {
