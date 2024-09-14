@@ -1,4 +1,4 @@
-package com.example.elsoleclipsado.model;
+package com.example.elsoleclipsado.model.game;
 
 public class RevealedLetter {
 

@@ -14,4 +14,8 @@ module com.example.elsoleclipsado {
     opens com.example.elsoleclipsado.model to javafx.fxml;
     exports com.example.elsoleclipsado.model.adapters;
     opens com.example.elsoleclipsado.model.adapters to javafx.fxml;
+    exports com.example.elsoleclipsado.model.welcome;
+    opens com.example.elsoleclipsado.model.welcome to javafx.fxml;
+    exports com.example.elsoleclipsado.model.game;
+    opens com.example.elsoleclipsado.model.game to javafx.fxml;
 }

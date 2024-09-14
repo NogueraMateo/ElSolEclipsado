@@ -1,5 +1,6 @@
 package com.example.elsoleclipsado;
 
+import com.example.elsoleclipsado.view.WelcomeView;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,14 +18,6 @@ public class ElSolEclipsado extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/com/example/elsoleclipsado/welcome-view.fxml")
-        );
-        Parent root = loader.load();
-        primaryStage.setTitle("El Sol Eclipsado");
-        Scene scene =  new Scene(root);
-        primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
-        primaryStage.show();
+        WelcomeView.getInstance();
     }
 }

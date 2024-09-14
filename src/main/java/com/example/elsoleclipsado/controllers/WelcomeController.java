@@ -1,6 +1,7 @@
 package com.example.elsoleclipsado.controllers;
 
-import com.example.elsoleclipsado.model.ForePlayModel;
+import com.example.elsoleclipsado.model.welcome.WelcomeModel;
+import com.example.elsoleclipsado.view.GameView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,9 +13,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-public class ForePlayController {
+import java.io.IOException;
 
-    private ForePlayModel forePlayModel;
+public class WelcomeController {
+
+    private WelcomeModel welcomeModel;
 
     @FXML
     private TextField secretWordTextField;
@@ -29,7 +32,7 @@ public class ForePlayController {
     @FXML
     public void initialize() {
 
-        forePlayModel = new ForePlayModel();
+        welcomeModel = new WelcomeModel();
         secretWordTextField.addEventFilter(
                 KeyEvent.KEY_TYPED,
                 this::handleKeyTyped
@@ -43,37 +46,10 @@ public class ForePlayController {
 
 
     @FXML
-    public void onActionPlayButton() {
-
+    public void onActionPlayButton() throws IOException {
         String inputWord = secretWordTextField.getText();
-        loadGameView(inputWord);
-
-    }
-
-
-    @FXML
-    public void loadGameView(String secretWord) {
-
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass()
-                    .getResource("/com/example/elsoleclipsado/game-view.fxml")
-            );
-
-            Parent root = loader.load();
-
-            GameController gameController = loader.getController();
-            gameController.initGame(secretWord);
-
-            Stage stage =  (Stage) playButton.getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setResizable(false);
-            stage.show();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        GameView gameView = GameView.getInstance();
+        gameView.getGameController().initGame(inputWord);
     }
 
 
@@ -82,14 +58,14 @@ public class ForePlayController {
         String currentWord = secretWordTextField.getText();
         String incomingChar = keyEvent.getCharacter();
 
-        if (!forePlayModel.isValidCharacter(incomingChar) || forePlayModel.maximumLengthReached(currentWord)) {
+        if (!welcomeModel.isValidCharacter(incomingChar) || welcomeModel.maximumLengthReached(currentWord)) {
 
             keyEvent.consume();
-            if (forePlayModel.maximumLengthReached(currentWord))
+            if (welcomeModel.maximumLengthReached(currentWord))
                 maxCharsReachedWarning.setVisible(true);
 
         }
-        else playButton.setDisable(!forePlayModel.minimumLengthReached(currentWord + incomingChar));
+        else playButton.setDisable(!welcomeModel.minimumLengthReached(currentWord + incomingChar));
 
     }
 

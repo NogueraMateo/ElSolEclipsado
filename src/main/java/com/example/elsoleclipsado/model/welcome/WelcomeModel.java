@@ -1,8 +1,8 @@
-package com.example.elsoleclipsado.model;
+package com.example.elsoleclipsado.model.welcome;
 
 import com.example.elsoleclipsado.model.adapters.TypingControlAdapter;
 
-public class ForePlayModel extends TypingControlAdapter {
+public class WelcomeModel extends TypingControlAdapter {
 
 
     public boolean minimumLengthReached(String word) {

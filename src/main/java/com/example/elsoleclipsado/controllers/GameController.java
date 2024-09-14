@@ -1,12 +1,10 @@
 package com.example.elsoleclipsado.controllers;
 
 import com.example.elsoleclipsado.model.adapters.TypingControlAdapter;
-import com.example.elsoleclipsado.model.GameModel;
-import com.example.elsoleclipsado.model.RevealedLetter;
+import com.example.elsoleclipsado.model.game.GameModel;
+import com.example.elsoleclipsado.model.game.RevealedLetter;
 import javafx.animation.FadeTransition;
-import javafx.animation.Timeline;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
