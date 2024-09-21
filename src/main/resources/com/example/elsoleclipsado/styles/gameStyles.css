@@ -31,7 +31,7 @@
     -fx-background-color: #ffcc80;
 }
 
-.text-field {
+.text-field, .text-field:disabled {
     -fx-pref-width: 50;
     -fx-pref-height: 50;
     -fx-alignment: 'Center';
@@ -39,9 +39,10 @@
     -fx-font-size: 16px;
     -fx-background-radius: 10;
     -fx-border-radius: 10;
-    -fx-border-color: #ffffff;
-    -fx-border-width: 2;
+    -fx-border-color: transparent transparent #000000 transparent;
+    -fx-border-width: 0 0 3 0;
     -fx-background-color: #f0f0f0;
+    -fx-opacity: 1;
 }
 
 .text-field:focused {
