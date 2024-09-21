@@ -1,6 +1,8 @@
 package com.example.elsoleclipsado.model.game;
 
 import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The GameModel class represents the logic of the game "El Sol Eclipsado".
@@ -12,7 +14,7 @@ public class GameModel {
     private final int MAXATTEMPTS;
     private int currentAttempts;
 
-    private HelpModel helpService;
+    private final HelpModel helpService;
 
     /**
      * Constructor for the GameModel class.
@@ -67,20 +69,40 @@ public class GameModel {
     }
 
     /**
-     * Checks if the input word matches the secret word, ignoring accents and case.
-     * Increases the attempt count if the word is incorrect.
-     * @param word the word entered by the player.
-     * @return true if the word matches the secret word, false otherwise.
+     * Checks if the secret word contains the input letter, ignoring accents and case.
+     * Increases the attempt count if the secret word doesn't contain the letter.
+     * @param letter: the letter entered by the player.
+     * @return true or false
      */
-    public boolean isCorrectSecretWord(String word) {
+    public boolean isCorrectInputLetter(String letter) {
         String noAccentSecretWord = removeAccents(secretWord);
-        String noAccentInputWord = removeAccents(word);
+        String noAccentInputLetter = removeAccents(letter);
 
-        if (noAccentInputWord.equalsIgnoreCase(noAccentSecretWord)) {
+        if (noAccentSecretWord.contains(noAccentInputLetter)) {
             return true;
         }
         currentAttempts++;
         return false;
+    }
+
+    /**
+     * Returns a list of integers containing the indexes where the input letter
+     * appears in the secret word.
+     * @param letter
+     * @return List of integers
+     */
+    public List<Integer> getLetterIndexes(String letter) {
+        List<Integer> indexes = new ArrayList<>();
+        String noAccentSecretWord = removeAccents(secretWord);
+        String noAccentInputLetter = removeAccents(letter);
+
+        for (int i = 0; i < noAccentSecretWord.length(); i++) {
+            if (String.valueOf(noAccentSecretWord.charAt(i)).equalsIgnoreCase(noAccentInputLetter)) {
+                indexes.add(i);
+            }
+        }
+
+        return indexes;
     }
 
     /**
@@ -108,5 +130,22 @@ public class GameModel {
         char randomLetter = secretWord.charAt(randomIndex);
 
         return new RevealedLetter(randomLetter, randomIndex);
+    }
+
+
+    /**
+     * Marks the help service as used, so the amount of uses of the
+     * help service decreases by one
+     */
+    public void markUsedHelp() {
+        this.helpService.markUsed();
+    }
+
+    /**
+     * Gets the amount of remaining amount of helps
+     * @return int
+     */
+    public int getRemainingHelps() {
+        return this.helpService.getUses();
     }
 }

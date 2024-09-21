@@ -12,13 +12,15 @@ import java.util.*;
  */
 public class HelpModel implements HelpInterface {
 
-    private Set<Integer> indexesRevealed;
-
+    private int uses = 3;
     /**
      * HelpModel constructor
      */
     public HelpModel() {
-        indexesRevealed = new HashSet<>();
+    }
+
+    public int getUses() {
+        return uses;
     }
 
     /**
@@ -28,27 +30,27 @@ public class HelpModel implements HelpInterface {
      */
     public boolean isAvailable() {
 
-        return MAXUSES != indexesRevealed.size();
+        return uses > 0;
     }
 
     /**
      * Essential method that randomly returns an index to reveal.
      * If the index has been already revealed it tries again until a non-revealed index
      * is obtained.
-     * @param wordLength
-     * @return
+     * @param wordLength : the length of the secret word
+     * @return : a random integer
      */
     public int getHelp(int wordLength) {
 
         Random rand = new Random(System.currentTimeMillis());
-        int nextInt;
+        return rand.nextInt(wordLength);
 
-        do {
-            nextInt = rand.nextInt(wordLength);
-        } while (indexesRevealed.contains(nextInt));
+    }
 
-        indexesRevealed.add(nextInt);
-        return nextInt;
-
+    /**
+     * Decreases the remaining uses by one
+     */
+    public void markUsed() {
+        uses -= 1;
     }
 }

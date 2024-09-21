@@ -1,9 +1,12 @@
 package com.example.elsoleclipsado.controllers;
 
+import com.example.elsoleclipsado.controllers.alerts.LooserAlert;
+import com.example.elsoleclipsado.controllers.alerts.WinnerAlert;
 import com.example.elsoleclipsado.model.adapters.TypingControlAdapter;
 import com.example.elsoleclipsado.model.game.GameModel;
 import com.example.elsoleclipsado.model.game.RevealedLetter;
 import javafx.animation.FadeTransition;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -14,6 +17,17 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 
+import java.lang.reflect.Array;
+import java.net.SocketOption;
+import java.sql.SQLOutput;
+import java.util.List;
+
+/**
+ * Manages how the user interacts with the interface and communicates
+ * these actions with the Game logic if necessary
+ * @author Mateo Noguera Pinto
+ * @version 1.0
+ */
 public class GameController extends TypingControlAdapter {
 
 
@@ -28,36 +42,105 @@ public class GameController extends TypingControlAdapter {
     @FXML
     private Label warningLabel;
 
+    @FXML
+    private TextField inputLetterField;
 
     @FXML
-    public void onActionValidateButton() {
+    private Label remainingAttempts;
 
-        String inputWord = getUserWord();
+    @FXML
+    private Label remainingHelps;
 
-        if (game.isCorrectSecretWord(inputWord)) {
-            System.out.println("Correct secret word, you won");
-        }
-        else {
-            changeSunStatus();
-            if (game.isLooser()) {
-                System.out.println("Incorrect Secret Word, you loose");
-                return;
-            }
-            System.out.println("Incorrect Secret Word, try again");
+    /**
+     * Method intended to be executed when the game is going to start
+     * Dynamically creates an according amount of text fields
+     * @param secretWord : secret word entered by the user
+     */
+    public void initGame(String secretWord) {
+        game = new GameModel(secretWord);
+
+        for ( int i = 0; i < secretWord.length(); ++i ) {
+            // Create a new TextField
+            TextField textField = new TextField();
+
+            // Setting an id
+            textField.setId("textField" + i);
+            textField.setDisable(true);
+            textField.getStyleClass().add("text-field");
+
+            this.inputLetterField.addEventFilter(KeyEvent.KEY_TYPED, this::handleKeyTyped);
+
+            textFieldsContainer.getChildren().add(textField);
         }
     }
 
 
+    /**
+     * Handles the action when the validate button is pressed.
+     * Gets the letter inside the text field and communicates
+     * with the GameModel in order to decide whether the letter
+     * is valid.
+     * Checks if the user has lost or has won.
+     */
+    @FXML
+    public void onActionValidateButton() {
+
+        String inputLetter = this.inputLetterField.getText();
+
+        if (game.isCorrectInputLetter(inputLetter)) {
+
+            List<Integer> indexes = game.getLetterIndexes(inputLetter);
+
+            for (int i : indexes) {
+                Node revealedNode = textFieldsContainer.getChildren().get(i);
+                ((TextField) revealedNode).setText(String.valueOf(inputLetter));
+            }
+
+            if (this.isWinner()) {
+                this.showWinnerAlert();
+            }
+        }
+        else {
+
+            changeSunStatus();
+            this.remainingAttempts.setText("Intentos restantes: " + this.game.getRemainingAttempts());
+            if (game.isLooser()) {
+                this.showLooserAlert();
+                return;
+            }
+        }
+    }
+
+
+    /**
+     * Handles the event when the help button is pressed.
+     * Communicates with the GameModel in order to get a random
+     * letter to reveal.
+     * After the letter is revealed, checks if the user has won.
+     */
     @FXML
     public void onActionHelpButton() {
 
         try {
+            RevealedLetter revealedLetter;
+            Node revealedNode;
+            do {
+                revealedLetter = game.revealLetter();
+                revealedNode = textFieldsContainer.getChildren().get(revealedLetter.getIndex());
+            } while (!((TextField) revealedNode).getText().isEmpty());
 
-            RevealedLetter letter = game.revealLetter();
-            Node revealedNode = textFieldsContainer.getChildren().get(letter.getIndex());
+            game.markUsedHelp();
+            this.remainingHelps.setText("Ayudas restantes: " + this.game.getRemainingHelps());
+            List<Integer> indexes = game.getLetterIndexes(revealedLetter.getLetter());
 
-            ((TextField) revealedNode).setText(String.valueOf(letter.getLetter()));
-            revealedNode.setDisable(true);
+            for (int i : indexes) {
+                revealedNode = textFieldsContainer.getChildren().get(i);
+                ((TextField) revealedNode).setText(String.valueOf(revealedLetter.getLetter()));
+            }
+
+            if (this.isWinner()) {
+                this.showWinnerAlert();
+            }
 
         } catch (Exception e) {
 
@@ -70,62 +153,25 @@ public class GameController extends TypingControlAdapter {
     }
 
 
-    public void initGame(String secretWord) {
-        game = new GameModel(secretWord);
-        System.out.println("Game initialized with secret word: " + secretWord);
-
-        for ( int i = 0; i < secretWord.length(); ++i ) {
-            // Create a new TextField
-            TextField textField = new TextField();
-
-            // Setting an id
-            textField.setId("textField" + i);
-            textField.getStyleClass().add("text-field");
-
-            textField.addEventFilter(KeyEvent.KEY_TYPED, this::handleKeyTyped);
-            textFieldsContainer.getChildren().add(textField);
-        }
-    }
-
-
+    /**
+     * Handles the event when a key is typed inside the text field for
+     * validating a letter.
+     * Allows only valid characters through
+     * @param event : the KeyEvent
+     */
     public void handleKeyTyped(KeyEvent event) {
 
         TextField currentField = (TextField) event.getSource();
         String incomingChar = event.getCharacter();
 
-
-        if (incomingChar.equals("\b")) {
-
-            int currentIndex = textFieldsContainer.getChildren().indexOf(currentField);
-
-            if (currentIndex > 0) {
-                Node previousNode = textFieldsContainer.getChildren().get(currentIndex - 1);
-
-                if (previousNode instanceof TextField) {
-                    ((TextField) previousNode).requestFocus();
-                    currentField.clear();
-                }
-            }
-            event.consume();
-        }
-        else if (isValidCharacter(incomingChar)) {
+        if (isValidCharacter(incomingChar)) {
 
             if (!currentField.getText().isEmpty()) {
                 event.consume();
             }
-
             else {
                 currentField.setText(incomingChar);
-                int currentIndex = textFieldsContainer.getChildren().indexOf(currentField);
-                if (currentIndex < textFieldsContainer.getChildren().size() - 1) {
-                    Node nextNode = textFieldsContainer.getChildren().get(currentIndex + 1);
-
-                    if (nextNode instanceof TextField) {
-                        ((TextField) nextNode).requestFocus();
-                    }
-                }
             }
-            event.consume();
         }
 
         else {
@@ -134,6 +180,10 @@ public class GameController extends TypingControlAdapter {
     }
 
 
+    /**
+     * Method intended to be called when the user validates a wrong letter.
+     * Changes the sun phase (image) with a smooth transition.
+     */
     public void changeSunStatus() {
         FadeTransition fadeOut = new FadeTransition(Duration.millis(500), sunImageView);
         fadeOut.setFromValue(1.0);
@@ -159,19 +209,12 @@ public class GameController extends TypingControlAdapter {
     }
 
 
-    public String getUserWord() {
-
-        StringBuilder userWord = new StringBuilder();
-        for (int i = 0; i < game.getSecretWordLength(); ++i) {
-            Node currentNode = textFieldsContainer.getChildren().get(i);
-            if (currentNode instanceof TextField) {
-                userWord.append(((TextField) currentNode).getText());
-            }
-        }
-        return userWord.toString();
-
-    }
-
+    /**
+     * Sets a smooth transition to a label object.
+     * Is used to show the label that warns the user that
+     * he has no more helps to use.
+     * @param object : label
+     */
     public void setFadeTransition(Label object) {
         FadeTransition transition = new FadeTransition(
                 Duration.seconds(3), object
@@ -182,5 +225,46 @@ public class GameController extends TypingControlAdapter {
         transition.play();
     }
 
+
+    /**
+     * Checks whether the user has won or not based on the
+     * amount of non-empty text fields.
+     * @return true if all the text fields are not empty, false otherwise
+     */
+    public boolean isWinner() {
+        ObservableList<Node> nodes =  this.textFieldsContainer.getChildren();
+        for ( Node node : nodes) {
+            if (node instanceof TextField) {
+                if (((TextField) node).getText().isEmpty()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * Method intended to be called when a user looses.
+     */
+    public void showLooserAlert() {
+        new LooserAlert().showAlert(
+                "Perdedor",
+                "Has perdido :(",
+                "No has logrado advinar la palabra, intentalo de nuevo."
+        );
+    }
+
+
+    /**
+     * Method intended to be used when a user wins.
+     */
+    public void showWinnerAlert() {
+        new WinnerAlert().showAlert(
+                "Ganador",
+                "¡Eres el ganador!",
+                "¡Felicitaciones, has logrado adivinar la palabra!"
+        );
+    }
 }
 
